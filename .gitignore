@@ -1,0 +1,15 @@
+dados/experimentos.json
+layouts/__pycache__/app2.cpython-38.pyc
+layouts/__pycache__/app1.cpython-38.pyc
+__pycache__/sidebar.cpython-38.pyc
+__pycache__/index.cpython-38.pyc
+callbacks/__pycache__/callbacksPrecipitacao.cpython-38.pyc
+callbacks/__pycache__/callbacksExperimentos.cpython-38.pyc
+callbacks/__pycache__/callbacksEstatistica.cpython-38.pyc
+callbacks/__pycache__/__init__.cpython-38.pyc
+__pycache__/appStyle.cpython-38.pyc
+__pycache__/app.cpython-38.pyc
+layouts/__pycache__/__init__.cpython-38.pyc
+layouts/__pycache__/layoutEstatistica.cpython-38.pyc
+layouts/__pycache__/layoutExperimentos.cpython-38.pyc
+layouts/__pycache__/layoutPrecipitacao.cpython-38.pyc
