@@ -7,7 +7,7 @@ from app import app
 import pandas as pd
 
 experimentos = pd.read_json(r'dados/experimentos.json')
-experimentos = experimentos.drop('Precipitação', axis = 1)
+experimentos = experimentos.drop(['dirvento', 'velvento', 'Precipitação'], axis = 1)
 
 def generate_table(dataframe):
     

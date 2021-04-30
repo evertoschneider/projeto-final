@@ -13,28 +13,9 @@ layout = html.Div([
 
     html.Div([
 
-        # dbc.Row([
-        #     dbc.Col([
-        #         dcc.Dropdown(
-        #             id='filtro-coluna-x', 
-        #             options=[{'label': i, 'value': i} for i in dados.columns],
-        #             placeholder='Selecione uma coluna',
-        #             style={'margin-bottom': '5px', 'margin-right': '5px'}
-        #         ),
-        #     ]),
-
-        #     dbc.Col([
-        #         dcc.Dropdown(
-        #             id='filtro-coluna-y', 
-        #             options=[{'label': i, 'value': i} for i in dados.columns],
-        #             placeholder='Selecione uma coluna',
-        #             style={'margin-bottom': '5px', 'margin-right': '5px'}
-        #         ),
-        #     ])
-        # ]),
-
         dbc.Tabs([
-                dbc.Tab(label="Análise Básica", tab_id="basic-stats"),
+                dbc.Tab(label="Análise Básica - Individual", tab_id="basic-stats"),
+                dbc.Tab(label="Análise Básica - Por Grupo", tab_id="basic-group-stats"),
                 dbc.Tab(label="Gráfico de Dispersão", tab_id="scatter-plot"),
             ],
             id="tabs-stats",

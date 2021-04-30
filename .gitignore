@@ -13,3 +13,4 @@ layouts/__pycache__/__init__.cpython-38.pyc
 layouts/__pycache__/layoutEstatistica.cpython-38.pyc
 layouts/__pycache__/layoutExperimentos.cpython-38.pyc
 layouts/__pycache__/layoutPrecipitacao.cpython-38.pyc
+dados/experimentos-distancia.json
