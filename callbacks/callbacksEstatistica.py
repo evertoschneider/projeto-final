@@ -87,21 +87,42 @@ def filter_basic_group_stats(filtro_coluna, filtro_distancia):
     if filtro_coluna is None or filtro_distancia is None:
         raise PreventUpdate
 
+    dff = experimentos
+
     data = []
-    valores_unicos = experimentos[filtro_coluna].unique()
+    colors = px.colors.sequential.ice
+    
+    if filtro_coluna == 'Velocidade Vento' or filtro_coluna == 'Direção Vento':
 
-    for u in valores_unicos:
+        for i in range(3, len(experimentos[filtro_coluna].describe())-1):
 
-        trace = go.Box(
-            y=experimentos.loc[experimentos[filtro_coluna] == u][filtro_distancia],
-            name = str(str(filtro_coluna) + " - " + str(u)),
-            marker = dict(
-                color = 'rgb(214, 12, 140)',
+            stats = experimentos[filtro_coluna].describe()
+            mask = (experimentos[filtro_coluna] >= stats[i]) & (experimentos[filtro_coluna] < stats[i+1])
+            trace = go.Box(
+                        y=experimentos[mask][filtro_distancia],
+                        name = str(str(filtro_coluna) + ": " + str(round(stats[i], 3)) + " - " + str(round(stats[i+1], 3))),
+                        marker = dict(
+                            color = colors[i],
+                        )
+                    )
+            
+            data.append(trace)
+    else:
+        valores_unicos = experimentos[filtro_coluna].unique()
+        i = 0
+
+        for u in valores_unicos:
+            trace = go.Box(
+                y=dff.loc[dff[filtro_coluna] == u][filtro_distancia],
+                name = str(str(filtro_coluna) + " - " + str(u)),
+                marker = dict(
+                    color = colors[i],
+                )
             )
-        )
 
-        data.append(trace)
-
+            i = i+1
+            data.append(trace)
+    
     fig = go.Figure(data=data)
 
     row = dbc.Row([
