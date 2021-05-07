@@ -27,7 +27,7 @@ for r in result:
 
 layout = html.Div([
 
-    html.H4(children='Analise de Precipitação dos Experimentos Realizados'),
+    html.H4(children='Análise de Precipitação dos Experimentos Realizados'),
     
     html.Div([
         dcc.Dropdown(

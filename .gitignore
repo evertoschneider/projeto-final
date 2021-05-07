@@ -14,3 +14,6 @@ layouts/__pycache__/layoutEstatistica.cpython-38.pyc
 layouts/__pycache__/layoutExperimentos.cpython-38.pyc
 layouts/__pycache__/layoutPrecipitacao.cpython-38.pyc
 dados/experimentos-distancia.json
+dados/dataframe-clusters.json
+callbacks/__pycache__/callbacksClusters.cpython-38.pyc
+layouts/__pycache__/layoutsClusters.cpython-38.pyc
