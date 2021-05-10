@@ -1,0 +1,14 @@
+OrderedDict([('estimator__activation', 'softsign'),
+             ('estimator__batch_size', 6),
+             ('estimator__dropout_rate', 0.1),
+             ('estimator__epochs', 500),
+             ('estimator__init_mode', 'uniform'),
+             ('estimator__loss', 'logcosh'),
+             ('estimator__neurons', 512),
+             ('estimator__optimizer', 'Adam'),
+             ('estimator__regularizers',
+              <tensorflow.python.keras.regularizers.L1 at 0x1d7b4544220>),
+             ('estimator__weight_constraint', 3),
+             ('scaler', StandardScaler())])
+
+Best Estimator Index: 21

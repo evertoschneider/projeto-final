@@ -1,0 +1,14 @@
+OrderedDict([('estimator__activation', 'tanh'),
+             ('estimator__batch_size', 9),
+             ('estimator__dropout_rate', 0.1),
+             ('estimator__epochs', 700),
+             ('estimator__init_mode', 'he_uniform'),
+             ('estimator__loss', 'huber'),
+             ('estimator__neurons', 512),
+             ('estimator__optimizer', 'Nadam'),
+             ('estimator__regularizers',
+              <tensorflow.python.keras.regularizers.L2 at 0x107c5dfaee0>),
+             ('estimator__weight_constraint', 1),
+             ('scaler', RobustScaler(quantile_range=(25, 75)))])
+
+Best Estimator Index: 49
