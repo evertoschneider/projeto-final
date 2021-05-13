@@ -48,34 +48,47 @@ def update_title_layout(title):
             'yanchor': 'top',
         }
 
-@app.callback(
-    Output('model-container', 'children'),
-    Input('filtro-modelos', 'value')
-)
-def generate_model_evaluation(filtro_modelo):
+def get_model_loss(filtro_modelo):
 
-    if filtro_modelo is None:
-        raise PreventUpdate
+    history = pd.read_json('best_models/' + filtro_modelo + '/history')
+    history.reset_index(inplace=True)
+    history = history.rename(columns = {'index':'epoch'})
 
-    #get metrics
-    tb_metrics = get_table_model(filtro_modelo, 'metrics')
-    
-    #get params
-    tb_params = get_table_model(filtro_modelo, 'params')
+    hist_erro = px.line(history, x="epoch", y="mse")
+    hist_erro.update_yaxes(
+        range=[0, 2]
+    )
+
+    hist_loss = px.line(history, x="epoch", y="loss")
+    hist_loss.update_yaxes(
+        range=[0, 2]
+    )
+
+    result = html.Div([
+        dbc.Row([
+                dbc.Col([
+                    dcc.Graph(figure=hist_erro, config={"displayModeBar": False, "showTips": False})
+                ]),
+
+                dbc.Col([
+                    dcc.Graph(figure=hist_loss, config={"displayModeBar": False, "showTips": False})
+                ])
+            ])
+        ])
+
+    return result
+
+def get_model_error(filtro_modelo):
 
     x_teste, y_teste = loadModelFunctions.get_clean_data()
-    
-    #predict model create function
+
     predictions = loadModelFunctions.make_predictions(filtro_modelo, '70_30', x_teste)
     
-    #predicted values create single function to both (pass array)
-    expected_precipitation =  loadModelFunctions.get_precipitation_expected_predicted(y_teste)
+    expected_precipitation = loadModelFunctions.get_precipitation_expected_predicted(y_teste)
     predicted_precipitation = loadModelFunctions.get_precipitation_expected_predicted(predictions)
 
-    #calculate error
     error = pd.Series(np.array(expected_precipitation) - np.array(predicted_precipitation))
 
-    #load hist graph
     hist = go.Figure(
         go.Histogram(
             x=error,
@@ -96,7 +109,6 @@ def generate_model_evaluation(filtro_modelo):
         nticks=7
     )
 
-    #load normal graphs
     resultados = pd.DataFrame({'Valores Preditos':predicted_precipitation, 'Resíduos':error})
 
     scatter = px.scatter(resultados, x='Valores Preditos', y='Resíduos')
@@ -106,21 +118,24 @@ def generate_model_evaluation(filtro_modelo):
         title= update_title_layout('Gráfico de Dispersão dos Resíduos')
     )
 
-    history = pd.read_json('best_models/' + filtro_modelo + '/history')
-    history.reset_index(inplace=True)
-    history = history.rename(columns = {'index':'epoch'})
+    result = html.Div([
+        dbc.Row([
+            dbc.Col([
+                dcc.Graph(figure=hist, config={"displayModeBar": False, "showTips": False})
+            ]),
 
-    hist_erro = px.line(history, x="epoch", y="mse")
-    hist_erro.update_yaxes(
-        range=[0, 2]
-    )
+            dbc.Col([
+                dcc.Graph(figure=scatter, config={"displayModeBar": False, "showTips": False})
+            ])
+        ]),
+    ])
 
-    hist_loss = px.line(history, x="epoch", y="loss")
-    hist_loss.update_yaxes(
-        range=[0, 2]
-    )
+    return result
 
-    #load cv graphs
+
+def get_table_parameters(filtro_modelo):
+    tb_metrics = get_table_model(filtro_modelo, 'metrics')
+    tb_params = get_table_model(filtro_modelo, 'params')
 
     result = html.Div([
         dbc.Row([
@@ -132,26 +147,30 @@ def generate_model_evaluation(filtro_modelo):
                 tb_params
             ])
         ]),
-
-        dbc.Row([
-            dbc.Col([
-                dcc.Graph(figure=hist, config={"displayModeBar": False, "showTips": False})
-            ]),
-
-            dbc.Col([
-                dcc.Graph(figure=scatter, config={"displayModeBar": False, "showTips": False})
-            ])
-        ]),
-
-        dbc.Row([
-            dbc.Col([
-                dcc.Graph(figure=hist_erro, config={"displayModeBar": False, "showTips": False})
-            ]),
-
-            dbc.Col([
-                dcc.Graph(figure=hist_loss, config={"displayModeBar": False, "showTips": False})
-            ])
-        ])
     ])
 
     return result
+
+@app.callback(
+    Output('model-container', 'children'),
+    Input('filtro-modelos', 'value'),
+    Input('tabs-models', 'active_tab')
+)
+def generate_model_evaluation(filtro_modelo, active_tab):
+
+    if filtro_modelo is None and active_tab is None:
+        raise PreventUpdate
+
+    if active_tab is not None and filtro_modelo is None:
+        return html.P('Selecione um modelo acima para carregar sua análise')
+
+    if active_tab == "model-parameters":
+        return get_table_parameters(filtro_modelo)
+
+    if active_tab == "model-error":
+        return get_model_error(filtro_modelo)
+
+    #model-cv
+
+    if active_tab == "model-loss":
+        return get_model_loss(filtro_modelo)
