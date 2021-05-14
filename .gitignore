@@ -26,3 +26,5 @@ dados/y_teste.json
 dados/y_treinamento.json
 dados/Y_validacao.json
 layouts/__pycache__/layoutModelos.cpython-38.pyc
+callbacks/__pycache__/callbacksPredicoes.cpython-38.pyc
+layouts/__pycache__/layoutsPredicoes.cpython-38.pyc

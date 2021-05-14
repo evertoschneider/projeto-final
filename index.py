@@ -7,7 +7,7 @@ from dash.dependencies import Input, Output
 from sidebar import sidebar, content
 
 from app import app
-from layouts import layoutExperimentos, layoutModelos, layoutPrecipitacao, layoutEstatistica, layoutsClusters
+from layouts import layoutExperimentos, layoutModelos, layoutPrecipitacao, layoutEstatistica, layoutsClusters, layoutsPredicoes
 
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
@@ -31,6 +31,8 @@ def display_page(pathname):
         return layoutsClusters.layout
     elif pathname == "/modelos":
         return layoutModelos.layout
+    elif pathname == "/predicao":
+        return layoutsPredicoes.layout
 
     return dbc.Jumbotron(
         [

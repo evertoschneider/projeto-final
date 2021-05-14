@@ -1,6 +1,3 @@
-from dash_html_components.Div import Div
-import pandas as pd
-
 import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 import dash_html_components as html
@@ -8,7 +5,7 @@ import dash_html_components as html
 from callbacks import callbacksModelos
 
 layout = html.Div([
-    html.H4(children='Melhores Modelos Encontrados através de processo BayesSearchCV'),
+    html.H4(children='Melhores Modelos Encontrados através do processo de Validação Cruzada'),
 
     html.Div([
         dcc.Dropdown(
@@ -27,8 +24,7 @@ layout = html.Div([
     html.Div([
         dbc.Tabs([
                 dbc.Tab(label="Parâmetros/Avaliação", tab_id="model-parameters"),
-                dbc.Tab(label="Análise de Resíduos", tab_id="model-error"),
-                dbc.Tab(label="Validação Cruzada", tab_id="model-cv"),
+                dbc.Tab(label="Análise de Predições/Erro", tab_id="model-error"),
                 dbc.Tab(label="Retreinamento Perda/Erro", tab_id="model-loss")
             ],
             id="tabs-models",

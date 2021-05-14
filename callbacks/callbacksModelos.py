@@ -12,7 +12,8 @@ from dash.exceptions import PreventUpdate
 import plotly.express as px
 import plotly.graph_objects as go
 
-from callbacks import loadModelFunctions
+from scipy import stats
+import plotly.graph_objects as go
 
 def get_table_model(filtro_modelo, tipo_tabela):
 
@@ -64,6 +65,18 @@ def get_model_loss(filtro_modelo):
         range=[0, 2]
     )
 
+    hist_erro.update_layout(
+        title= update_title_layout('Evolução do Erro durante Retreinamento'),
+        xaxis_title="N° Épocas",
+        yaxis_title="Erro"
+    )
+
+    hist_loss.update_layout(
+        title= update_title_layout('Evolução do Valor de Perda durante Retreinamento'),
+        xaxis_title="N° Épocas",
+        yaxis_title="Perda"
+    )
+
     result = html.Div([
         dbc.Row([
                 dbc.Col([
@@ -80,19 +93,15 @@ def get_model_loss(filtro_modelo):
 
 def get_model_error(filtro_modelo):
 
-    x_teste, y_teste = loadModelFunctions.get_clean_data()
+    expected_precipitation = pd.read_json('best_models/' + filtro_modelo + '/expected_precipitation.json', typ='series')
+    predicted_precipitation = pd.read_json('best_models/' + filtro_modelo + '/predicted_precipitation.json', typ='series')
 
-    predictions = loadModelFunctions.make_predictions(filtro_modelo, '70_30', x_teste)
-    
-    expected_precipitation = loadModelFunctions.get_precipitation_expected_predicted(y_teste)
-    predicted_precipitation = loadModelFunctions.get_precipitation_expected_predicted(predictions)
-
-    error = pd.Series(np.array(expected_precipitation) - np.array(predicted_precipitation))
+    error = pd.Series(expected_precipitation - predicted_precipitation)
 
     hist = go.Figure(
         go.Histogram(
             x=error,
-            xbins=dict(start=-150, end=150, size=15),
+            xbins=dict(start=-150, end=175, size=20),
             nbinsx=7
         )
     )
@@ -105,7 +114,7 @@ def get_model_error(filtro_modelo):
     )
 
     hist.update_xaxes(
-        range=[-150, 150],
+        range=[-150, 175],
         nticks=7
     )
 
@@ -118,16 +127,49 @@ def get_model_error(filtro_modelo):
         title= update_title_layout('Gráfico de Dispersão dos Resíduos')
     )
 
-    result = html.Div([
+    qq = stats.probplot(error, sparams=(1))
+    x = np.array([qq[0][0][0], qq[0][0][-1]])
+
+    qq_plot = go.Figure()
+    qq_plot.add_scatter(x=qq[0][0], y=qq[0][1], mode='markers')
+    qq_plot.add_scatter(x=x, y=qq[1][1] + qq[1][0]*x, mode='lines')
+    qq_plot.layout.update(showlegend=False)
+
+    qq_plot.update_layout(
+        title= update_title_layout('Gráfico Q-Q')
+    )
+
+    expected_predicted = px.scatter(x=expected_precipitation, y=predicted_precipitation, labels={'x': 'Valores Reais', 'y': 'Valores Preditos'})
+    expected_predicted.add_shape(
+        type="line", line=dict(dash='dash'),
+        x0=np.array(expected_precipitation).min(), y0=np.array(expected_precipitation).min(),
+        x1=np.array(expected_precipitation).max(), y1=np.array(expected_precipitation).max()
+    )
+
+    expected_predicted.update_layout(
+        title= update_title_layout('Análise Valores Reais/Preditos')
+    )
+
+    result = dbc.Row([
         dbc.Row([
             dbc.Col([
                 dcc.Graph(figure=hist, config={"displayModeBar": False, "showTips": False})
             ]),
 
             dbc.Col([
-                dcc.Graph(figure=scatter, config={"displayModeBar": False, "showTips": False})
-            ])
+                dcc.Graph(figure=qq_plot, config={"displayModeBar": False, "showTips": False})
+            ]),
         ]),
+
+        dbc.Row([
+            dbc.Col([
+                dcc.Graph(figure=scatter, config={"displayModeBar": False, "showTips": False})
+            ]),
+
+            dbc.Col([
+                dcc.Graph(figure=expected_predicted, config={"displayModeBar": False, "showTips": False})
+            ]),
+        ])
     ])
 
     return result
@@ -146,7 +188,7 @@ def get_table_parameters(filtro_modelo):
             dbc.Col([
                 tb_params
             ])
-        ]),
+        ], className='mt-5'),
     ])
 
     return result
