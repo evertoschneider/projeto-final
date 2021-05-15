@@ -13,7 +13,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 from scipy import stats
-import plotly.graph_objects as go
 
 def get_table_model(filtro_modelo, tipo_tabela):
 

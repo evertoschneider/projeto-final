@@ -15,20 +15,26 @@ from keras.constraints import maxnorm
 from sklearn import pipeline
 from joblib import load
 
-X_treinamento = pd.read_json(r'dados/X_treinamento.json')
-X_treinamento.drop(['horario_experimento', 'mes_experimento', 'vazao_inicial', 'vazao_final', 'vazao_total'], axis=1)
+X_validacao = pd.read_json(r'dados/X_validacao.json')
 
-X_teste = pd.read_json(r'dados/X_teste.json')
-teste_json = pd.read_json(r'dados/y_teste.json', typ='series')
+validacao_json = pd.read_json (r'dados/Y_validacao.json', typ='series')
 
-def make_predictions(model, training, data):
+a = []
 
-    path_model = 'best_models/' + model + '/model_' + training + '.h5'
+for i in range(validacao_json.size):
+    a.append(list(validacao_json[i]))
+
+y_validacao = np.array(a, dtype='float32')
+
+
+def make_predictions(model, data):
+
+    path_model = 'best_models/' + model + '/model_100.h5'
 
     loaded_model = KerasRegressor(build_fn=build_model, verbose=1)
     loaded_model.model = load_model(path_model)
 
-    path_scaler = 'best_models/' + model + '/scaler_' + training + '.joblib'
+    path_scaler = 'best_models/' + model + '/scaler_100.joblib'
 
     scaler = load(path_scaler)
 
@@ -43,29 +49,16 @@ def make_predictions(model, training, data):
 
 def get_precipitation_expected_predicted(array_precipitation):
 
-    result_precipitation = []
-
-    for i in range(array_precipitation.shape[0]):
-        dfE = pd.DataFrame(
-            array_precipitation[i].reshape(16,16), 
+    df = pd.DataFrame(
+            array_precipitation.reshape(16,16), 
             columns=['0', '1', '2', '3', '4', '5', '6', '7', '8', 
                     '9', '10', '11', '12', '13', '14', '15'])
-        w = dfE.values.sum()
-        result_precipitation.append(w)
-
-    return result_precipitation
-
-def get_clean_data():
-    x_teste_copy = X_teste.copy().drop(['horario_experimento', 'mes_experimento', 'vazao_inicial', 'vazao_final', 'vazao_total'], axis=1)
-
-    b = []
         
-    for i in range(teste_json.size):
-        b.append(list(teste_json[i]))
+    for i in range(16):
+        df.loc[df[str(i)] < 0, str(i)] = 0
 
-    y_teste = np.array(b, dtype='float32')
+    return df
 
-    return x_teste_copy, y_teste
 
 def build_model(
     optimizer,
@@ -87,7 +80,7 @@ def build_model(
             kernel_initializer=init_mode,
             kernel_constraint=maxnorm(weight_constraint),
             kernel_regularizer=regularizers,
-            input_shape=[len(X_treinamento.keys())]
+            input_shape=[len(X_validacao.keys())]
         )
     )
     model.add(layers.Dropout(dropout_rate))
