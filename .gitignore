@@ -29,3 +29,7 @@ layouts/__pycache__/layoutModelos.cpython-38.pyc
 callbacks/__pycache__/callbacksPredicoes.cpython-38.pyc
 layouts/__pycache__/layoutsPredicoes.cpython-38.pyc
 dados/X_val_apresentacao.json
+dados/X_validacao_5.json
+dados/Y_validacao_5.json
+best_models/scaler_100.joblib
+best_models/model_100.h5
